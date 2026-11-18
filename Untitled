@@ -1,0 +1,77 @@
+I'm learning front-end development, going from junior to mid-level on a 40-hour/week roadmap: Tailwind, React, Next.js, TypeScript and GSAP. My roadmap is here: https://claude.ai/artifact/8UtrRyC5XuTA1B7jYfupmJ
+
+What I know: HTML, CSS and vanilla JavaScript (DOM, events, arrays, objects, functions, forEach, localStorage, arrow functions, template literals). I do NOT know promises, async/await or fetch yet, so this project must not use them.
+
+I just finished my first project, QuizMaster (https://github.com/alexuscarter/quizmaster), a vanilla JS quiz app with shuffled questions, a results/review screen, best score in localStorage and keyboard controls.
+
+Before Phase 0 (async JS), I want one more project at the same level: a Book Tracker (add/edit/delete books, status filters, sorting, ratings, everything saved in localStorage with JSON.stringify/parse).
+
+How I'd like to work, the same as last time:
+1. Give me a project brief: requirements, a schedule, hints and a "Done when" checklist.
+2. Design the UI and write the HTML and CSS for me (light + dark mode, responsive, with placeholder examples and comments showing which ids/classes my JS should use).
+3. Walk me through it step by step, one step at a time. Give hints, not finished JavaScript; I write all the JS myself.
+4. Review my code when I paste it or push it to GitHub, pointing out bugs first and then cleanups.
+
+I’ll start by looking at your roadmap and QuizMaster, so the Book Tracker matches what you’ve already done and how it was structured.
+
+I’m building the Book Tracker HTML/CSS to match the brief already in your roadmap, reusing QuizMaster’s CSS structure with a warmer library look.
+
+Now let me check it renders well in light, dark and phone sizes (including the rating stars and an error state).
+
+Looks good in both themes. One fix: on phones the Delete button wraps onto its own line, so I’ll put the status dropdown on its own full-width row there.
+
+Book Tracker design: light, dark (follows your system setting) and phone. The red Pages error and the rating stars are switched on here so you can see how they look.
+
+1. The brief
+
+Your roadmap already has the full brief for this project, under “Week 0.5 — Second warm-up project: Book Tracker”. It has the requirements, the Mon–Fri schedule, the hints, the “Done when” checklist and the extra challenges. I didn’t copy it here, so there’s only one version to follow. The HTML adds four details to it:
+
+Book object: { id, title, author, pages, status, rating }. status is "want", "reading" or "finished". rating is 1–5 for finished books and null for the others. id comes from Date.now(), which also gives you the “Newest first” sort for free.
+Rating is required for finished books. I added this rule and gave it its own error message. You can drop it if you’d rather keep ratings optional.
+localStorage key: "bookTracker.books".
+The form has novalidate. That turns off the browser’s built-in popups, so your own validation code is what runs.
+2. The HTML and CSS
+
+The files are in /home/user/booktracker/:
+
+index.html: the header, stats, the add/edit form, filter tabs, sort, book cards and the empty state. Comments next to each part say which ids, classes and data- attributes your JS should use.
+style.css: built like QuizMaster’s, with tokens at the top, dark mode that follows your system setting, and numbered sections. It works on phones and has no sideways scrolling at 375px wide.
+script.js: empty except for one comment line.
+screenshots/: the three previews above.
+
+The three book cards in the HTML are only examples of the markup your JS should build. Your first render() replaces them, and after that you can delete them from the file.
+
+3. Step 1 of 10: draw cards from an array
+
+Goal: the cards on screen come from a JavaScript array, not from the HTML.
+
+Create the booktracker repo, add the three files and make your first commit.
+In script.js, make a books array with 3 sample books, one for each status, using the object shape above. You’ll swap this for localStorage in step 3.
+Store the elements you need in variables at the top of the file, like you did in QuizMaster. For this step you only need #book-list.
+Write createBookCard(book). It should return an <li> that matches the example card in the HTML.
+Write render(). It clears the list, then loops over books and appends one card for each book.
+
+Hints:
+
+Copy the example card’s structure into a comment and build it one element at a time from top to bottom: li → cover → body → title, author, meta, actions.
+li.dataset.status = book.status sets the colour of the cover and the left edge. The CSS does the rest.
+For the cover letter, think about how you get the first character of a string and make it uppercase.
+Stars only show for finished books, so use an if. Look up String.prototype.repeat(): you need it twice, once for filled stars and once for empty ones.
+Don’t write the three <option>s by hand. Make a small array like [{ value: "want", label: "Want to read" }, …] and forEach over it. You’ll reuse that array later for labels.
+Set select.value = book.status after the options have been added.
+Use textContent for everything the user typed, as you did in QuizMaster. A book called <b>Bold</b> should show exactly that text.
+Leave the Edit and Delete buttons without listeners for now. Those come in step 5.
+
+Done when: the page shows your 3 sample books instead of the HTML examples, with matching cover colours and stars only on the finished one. Changing a title in the array and reloading should change the card, and the console should have no errors.
+
+Paste your code or push it to GitHub when you’re done, and I’ll review it: bugs first, then cleanups. Step 2 is the add form and validation.
+
+Created 3 files
+index.html
++238
+style.css
++769
+script.js
++1
+See all
++1,008

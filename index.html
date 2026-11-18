@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- ============ HEADER ============ -->
+      <header class="app-header">
+        <div class="logo" aria-hidden="true">B</div>
+        <div>
+          <h1 class="title">Book Tracker</h1>
+          <p class="subtitle">
+            Keep track of what you want to read, are reading and have finished.
+          </p>
+        </div>
+      </header>
+
+      <!-- ============ STATS ============
+           Set these with textContent from the books array.
+           Average rating: one decimal (toFixed(1)), or "–" when nothing is rated yet. -->
+      <ul class="stats" aria-label="Reading stats">
+        <li class="stat">
+          <span class="stat__value" id="stat-finished">3</span>
+          <span class="stat__label">Books finished</span>
+        </li>
+        <li class="stat">
+          <span class="stat__value" id="stat-pages">1,024</span>
+          <span class="stat__label">Pages read</span>
+        </li>
+        <li class="stat">
+          <span class="stat__value" id="stat-rating">4.3</span>
+          <span class="stat__label">Average rating</span>
+        </li>
+      </ul>
+
+      <main class="layout">
+        <!-- ============ ADD / EDIT FORM ============
+             Edit mode: add class "is-editing" to #form-panel, change #form-title and
+             #submit-btn text, and show #cancel-btn (hidden = false).
+             "novalidate" turns off the browser's own popups, so YOUR validation runs. -->
+        <aside class="panel form-panel" id="form-panel">
+          <h2 class="panel__title" id="form-title">Add a book</h2>
+
+          <form class="form" id="book-form" novalidate>
+            <!-- Each field: when invalid, add class "is-invalid" to the .field,
+                 put the message in its .field__error and set hidden = false. -->
+            <div class="field" id="title-field">
+              <label class="field__label" for="title">Title</label>
+              <input
+                class="input"
+                type="text"
+                id="title"
+                name="title"
+                placeholder="e.g. The Hobbit"
+                autocomplete="off"
+              />
+              <p class="field__error" id="title-error" hidden>
+                Please enter a title.
+              </p>
+            </div>
+
+            <div class="field" id="author-field">
+              <label class="field__label" for="author">Author</label>
+              <input
+                class="input"
+                type="text"
+                id="author"
+                name="author"
+                placeholder="e.g. J.R.R. Tolkien"
+                autocomplete="off"
+              />
+              <p class="field__error" id="author-error" hidden>
+                Please enter an author.
+              </p>
+            </div>
+
+            <div class="field-row">
+              <div class="field" id="pages-field">
+                <label class="field__label" for="pages">Pages</label>
+                <!-- .value is always a string: convert with Number() -->
+                <input
+                  class="input"
+                  type="number"
+                  id="pages"
+                  name="pages"
+                  min="1"
+                  placeholder="310"
+                />
+                <p class="field__error" id="pages-error" hidden>
+                  Pages must be a number above 0.
+                </p>
+              </div>
+
+              <div class="field" id="status-field">
+                <label class="field__label" for="status">Status</label>
+                <!-- Listen for "change": show #rating-field only when the value is "finished" -->
+                <select class="input select" id="status" name="status">
+                  <option value="want">Want to read</option>
+                  <option value="reading">Reading</option>
+                  <option value="finished">Finished</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Rating: only for finished books, so start it hidden.
+                 Read the picked star with: document.querySelector('input[name="rating"]:checked')
+                 (null when no star is picked). To pick one from JS: set .checked = true on
+                 the input with that value. form.reset() clears it. -->
+            <fieldset class="field rating-field" id="rating-field" hidden>
+              <legend class="field__label">Rating</legend>
+              <div class="rating-input">
+                <label class="star"
+                  ><input type="radio" name="rating" value="1" /><span
+                    aria-hidden="true"
+                    >★</span
+                  ><span class="sr-only">1 star</span></label
+                >
+                <label class="star"
+                  ><input type="radio" name="rating" value="2" /><span
+                    aria-hidden="true"
+                    >★</span
+                  ><span class="sr-only">2 stars</span></label
+                >
+                <label class="star"
+                  ><input type="radio" name="rating" value="3" /><span
+                    aria-hidden="true"
+                    >★</span
+                  ><span class="sr-only">3 stars</span></label
+                >
+                <label class="star"
+                  ><input type="radio" name="rating" value="4" /><span
+                    aria-hidden="true"
+                    >★</span
+                  ><span class="sr-only">4 stars</span></label
+                >
+                <label class="star"
+                  ><input type="radio" name="rating" value="5" /><span
+                    aria-hidden="true"
+                    >★</span
+                  ><span class="sr-only">5 stars</span></label
+                >
+              </div>
+              <p class="field__error" id="rating-error" hidden>
+                Pick a rating for a finished book.
+              </p>
+            </fieldset>
+
+            <div class="form__actions">
+              <button class="btn btn--primary" type="submit" id="submit-btn">
+                Add book
+              </button>
+              <!-- type="button" so it never submits the form -->
+              <button
+                class="btn btn--ghost"
+                type="button"
+                id="cancel-btn"
+                hidden
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </aside>
+
+        <!-- ============ LIBRARY ============ -->
+        <section class="panel library" aria-labelledby="library-title">
+          <div class="library__header">
+            <h2 class="panel__title" id="library-title">My books</h2>
+
+            <div class="sort">
+              <label class="sort__label" for="sort">Sort by</label>
+              <select class="input select select--small" id="sort">
+                <option value="newest">Newest first</option>
+                <option value="title">Title A–Z</option>
+                <option value="rating">Highest rated</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Filter tabs: read the filter with button.dataset.filter.
+               The active tab gets class "is-active" and aria-pressed="true" (others "false").
+               Update each count with textContent. -->
+          <div class="tabs" role="group" aria-label="Filter by status">
+            <button
+              class="tab is-active"
+              type="button"
+              data-filter="all"
+              aria-pressed="true"
+            >
+              All <span class="tab__count" id="count-all">4</span>
+            </button>
+            <button
+              class="tab"
+              type="button"
+              data-filter="want"
+              aria-pressed="false"
+            >
+              Want to read <span class="tab__count" id="count-want">1</span>
+            </button>
+            <button
+              class="tab"
+              type="button"
+              data-filter="reading"
+              aria-pressed="false"
+            >
+              Reading <span class="tab__count" id="count-reading">1</span>
+            </button>
+            <button
+              class="tab"
+              type="button"
+              data-filter="finished"
+              aria-pressed="false"
+            >
+              Finished <span class="tab__count" id="count-finished">2</span>
+            </button>
+          </div>
+
+          <!-- Your render() clears this list (innerHTML = "") and rebuilds every card with
+               createElement + textContent. The cards below are EXAMPLES of the markup to build:
+               your first render() replaces them, then you can delete them from this file. -->
+          <ul class="book-list" id="book-list">
+            <!-- ===== Example card: FINISHED, with a rating =====
+                 li.dataset.status = book.status  → colours the cover and the left edge
+                 Add class "is-editing" to the card being edited. -->
+            <li class="book" data-status="finished">
+              <!-- Cover: the first letter of the title -->
+              <div class="book__cover" aria-hidden="true">H</div>
+
+              <div class="book__body">
+                <h3 class="book__title">The Hobbit</h3>
+                <p class="book__author">J.R.R. Tolkien</p>
+
+                <p class="book__meta">
+                  <span class="book__pages">310 pages</span>
+                  <!-- Stars: only for finished books. Two spans so filled and empty stars get different colours:
+                       "★".repeat(rating) and "★".repeat(5 - rating). Set aria-label on .stars. -->
+                  <span class="stars" aria-label="Rated 4 out of 5">
+                    <span class="stars__filled" aria-hidden="true">★★★★</span
+                    ><span class="stars__empty" aria-hidden="true">★</span>
+                  </span>
+                </p>
+
+                <div class="book__actions">
+                  <!-- Quick status change: listen for "change" on this select.
+                       Set select.value = book.status after adding the options.
+                       aria-label tells screen readers which book it belongs to. -->
+                  <select
+                    class="input select select--small book__status"
+                    aria-label="Status of The Hobbit"
+                  >
+                    <option value="want">Want to read</option>
+                    <option value="reading">Reading</option>
+                    <option value="finished" selected>Finished</option>
+                  </select>
+                  <button
+                    class="btn btn--small btn--ghost book__edit"
+                    type="button"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn--small btn--danger book__delete"
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </li>
+
+            <!-- ===== Example card: READING (no stars) ===== -->
+            <li class="book" data-status="reading">
+              <div class="book__cover" aria-hidden="true">D</div>
+              <div class="book__body">
+                <h3 class="book__title">Dune</h3>
+                <p class="book__author">Frank Herbert</p>
+                <p class="book__meta">
+                  <span class="book__pages">412 pages</span>
+                </p>
+                <div class="book__actions">
+                  <select
+                    class="input select select--small book__status"
+                    aria-label="Status of Dune"
+                  >
+                    <option value="want">Want to read</option>
+                    <option value="reading" selected>Reading</option>
+                    <option value="finished">Finished</option>
+                  </select>
+                  <button
+                    class="btn btn--small btn--ghost book__edit"
+                    type="button"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn--small btn--danger book__delete"
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </li>
+
+            <!-- ===== Example card: WANT TO READ, shown in edit mode ===== -->
+            <li class="book is-editing" data-status="want">
+              <div class="book__cover" aria-hidden="true">E</div>
+              <div class="book__body">
+                <h3 class="book__title">Eloquent JavaScript</h3>
+                <p class="book__author">Marijn Haverbeke</p>
+                <p class="book__meta">
+                  <span class="book__pages">472 pages</span>
+                </p>
+                <div class="book__actions">
+                  <select
+                    class="input select select--small book__status"
+                    aria-label="Status of Eloquent JavaScript"
+                  >
+                    <option value="want" selected>Want to read</option>
+                    <option value="reading">Reading</option>
+                    <option value="finished">Finished</option>
+                  </select>
+                  <button
+                    class="btn btn--small btn--ghost book__edit"
+                    type="button"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn--small btn--danger book__delete"
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Empty state: show (hidden = false) when there's nothing to list.
+               Change the two texts depending on the case:
+               no books at all → "No books yet" / "Add your first book with the form."
+               none in this filter → "Nothing here" / "No books with this status yet." -->
+          <div class="empty" id="empty-state" hidden>
+            <div class="empty__icon" aria-hidden="true">📚</div>
+            <p class="empty__title" id="empty-title">No books yet</p>
+            <p class="empty__text" id="empty-text">
+              Add your first book with the form.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">Your books are saved in this browser.</footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
