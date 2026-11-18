@@ -107,7 +107,7 @@ const createBookCard = (book) => {
   const cover = document.createElement("div");
   cover.className = "book__cover";
   cover.setAttribute("aria-hidden", "true");
-  cover.textContent = book.title[0];
+  cover.textContent = book.title[0].toUpperCase();
 
   const body = document.createElement("div");
   body.className = "book__body";
@@ -154,12 +154,12 @@ const createBookCard = (book) => {
   select.className = "input select select--small book__status";
   select.setAttribute("aria-label", `Status of ${book.title}`);
 
-  for (const optionData of STATUS_OPTIONS) {
+  STATUS_OPTIONS.forEach(({ value, label }) => {
     const option = document.createElement("option");
-    option.value = optionData.value;
-    option.textContent = optionData.label;
+    option.value = value;
+    option.textContent = label;
     select.appendChild(option);
-  }
+  });
   select.value = book.status;
 
   const editBtn = document.createElement("button");
